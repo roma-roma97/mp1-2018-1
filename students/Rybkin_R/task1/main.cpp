@@ -1,64 +1,47 @@
 #include <iostream>
 using namespace std;
-class Converter {
-	double t = 0.0; // по умолчанию тепература равна 0 в C
+class ConverterTemperature {
+	double t;
 public:
-	Converter(double a) : t(a) {}
-	Converter operator=(double d)
+	ConverterTemperature(double a = 0) : t(a) {}
+	ConverterTemperature &operator=(double _t)
 	{
-		t = d;
+		t = _t;
 		return *this;
-	} // перегрузка оператора присваивания
-	void TempC()
+	} // перегрузка оператора присваивания для чисел
+	ConverterTemperature &operator=(const ConverterTemperature &temperature)
+	{
+		t = temperature.t;
+		return *this;
+	}//оператор присваивания между объектами одного класса
+	void TemperatureC()
 	{
 		cout << "Температура = " << t << "C \n";
 	}
-	void TempF()
+	void TemperatureF()
 	{
 		cout << "Температура = " << Farengeit() << "F \n";
 	}
-	void TempK()
+	void TemperatureK()
 	{
 		cout << "Температура = " << Kelvin() << "K \n";
 	}
-	void TempRa()
+	void TemperatureRa()
 	{
 		cout << "Температура = " << Rankin() << "Ra \n";
 	}
-	void TempR()
+	void TemperatureR()
 	{
 		cout << "Температура = " << Reomyr() << "R \n";
 	}
-	void PrintAll()
+	void TemperatureAll()
 	{
-		cout << "Температура по шкале Цельсия = " << t << "\n";
-		cout << "Температура по шкале Кельвина = " << Kelvin() << "\n";
-		cout << "Температура по шкале Фаренгейта = " << Farengeit() << "\n";
-		cout << "Температура по шкале Ранкина = " << Rankin() << "\n";
-		cout << "Температура по шкале Реомюра = " << Reomyr() << "\n";
+		TemperatureC();
+		TemperatureF();
+		TemperatureK();
+		TemperatureRa();
+		TemperatureR();
 	}  //Выводит на консоль температуру во всех видах
-	void Print()
-	{
-		int id;
-		cout << "По какой шкале вы хотите узнать температуру: \n";
-		cout << "0 - по шкале Цельсия \n";
-		cout << "1 - по шкале Фаренгейта \n";
-		cout << "2 - по шкале Кельвина \n";
-		cout << "3 - по шкале Ранкина \n";
-		cout << "4 - по шкале Реомюра \n";
-		cout << "5 - сразу во всех \n";
-
-		cin >> id;
-		switch (id)
-		{
-		case 0: TempC(); break;
-		case 1: TempF(); break;
-		case 2: TempK(); break;
-		case 3: TempRa(); break;
-		case 4: TempR(); break;
-		case 5: PrintAll(); break;
-		}
-	}
 	double Farengeit()
 	{
 		return (9.0 / 5.0)*t + 32.0;
@@ -79,7 +62,6 @@ public:
 	{
 		return t;
 	}
-
 };
 int main()
 {
@@ -87,10 +69,19 @@ int main()
 	setlocale(LC_ALL, "Russian");
 	cout << "Введите температуру : ";//Установление  температуры
 	cin >> a;
-	Converter Monday(a);
-	Monday.Print();
-	Monday = 7.0;//присваивание
-	Monday.Print();
+	ConverterTemperature Monday(a);
+	ConverterTemperature Tuesday(5);
+	Monday.TemperatureC();
+	Monday.TemperatureF();
+	Monday.TemperatureK();
+	Monday.TemperatureRa();
+	Monday.TemperatureR();
+	cout << "\n";
+	Monday = 7.0; // Присваивание число классу
+	Monday.TemperatureAll();
+	cout << "\n";
+	Monday = Tuesday;//Присваивание между классами
+	Monday.TemperatureAll();
 	system("pause");
 	return 0;
 }
