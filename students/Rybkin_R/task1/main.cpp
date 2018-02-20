@@ -1,38 +1,38 @@
-#include <iostream>
+п»ї#include <iostream>
 using namespace std;
 class ConverterTemperature {
 	double t;
 public:
 	ConverterTemperature(double a = 0) : t(a) {}
-	ConverterTemperature &operator=(double _t)
+	ConverterTemperature& operator=(double _t)
 	{
 		t = _t;
 		return *this;
-	} // перегрузка оператора присваивания для чисел
-	ConverterTemperature &operator=(const ConverterTemperature &temperature)
+	} // РїСЂРёСЃРІР°РёРІР°РЅРёРµ РєР»Р°СЃСЃСѓ С‡РёСЃР»Р° С‚РёРїР° double
+	ConverterTemperature& operator=(const ConverterTemperature& temperature)
 	{
 		t = temperature.t;
 		return *this;
-	}//оператор присваивания между объектами одного класса
+	}//РѕРїРµСЂР°С‚РѕСЂ РїСЂРёСЃРІР°РёРІР°РЅРёСЏ РјРµР¶РґСѓ РѕР±СЉРµРєС‚Р°РјРё РѕРґРЅРѕРіРѕ РєР»Р°СЃСЃР°
 	void TemperatureC()
 	{
-		cout << "Температура = " << t << "C \n";
+		cout << "РўРµРјРїРµСЂР°С‚СѓСЂР° = " << t << "C \n";
 	}
 	void TemperatureF()
 	{
-		cout << "Температура = " << Farengeit() << "F \n";
+		cout << "РўРµРјРїРµСЂР°С‚СѓСЂР° = " << Farengeit() << "F \n";
 	}
 	void TemperatureK()
 	{
-		cout << "Температура = " << Kelvin() << "K \n";
+		cout << "РўРµРјРїРµСЂР°С‚СѓСЂР° = " << Kelvin() << "K \n";
 	}
 	void TemperatureRa()
 	{
-		cout << "Температура = " << Rankin() << "Ra \n";
+		cout << "РўРµРјРїРµСЂР°С‚СѓСЂР° = " << Rankin() << "Ra \n";
 	}
 	void TemperatureR()
 	{
-		cout << "Температура = " << Reomyr() << "R \n";
+		cout << "РўРµРјРїРµСЂР°С‚СѓСЂР° = " << Reomyr() << "R \n";
 	}
 	void TemperatureAll()
 	{
@@ -41,7 +41,7 @@ public:
 		TemperatureK();
 		TemperatureRa();
 		TemperatureR();
-	}  //Выводит на консоль температуру во всех видах
+	}  //Р’С‹РІРѕРґ РЅР° РєРѕРЅСЃРѕР»СЊ С‚РµРјРїРµСЂР°С‚СѓСЂС‹ РІРѕ РІСЃРµС… С€РєР°Р»Р°С…
 	double Farengeit()
 	{
 		return (9.0 / 5.0)*t + 32.0;
@@ -67,20 +67,20 @@ int main()
 {
 	double a;
 	setlocale(LC_ALL, "Russian");
-	cout << "Введите температуру : ";//Установление  температуры
+	cout << "Р’РІРµРґРёС‚Рµ С‚РµРјРїРµСЂР°С‚СѓСЂСѓ : ";
 	cin >> a;
 	ConverterTemperature Monday(a);
 	ConverterTemperature Tuesday(5);
-	Monday.TemperatureC();
+	Monday.TemperatureC(); // 74-78 СЃС‚СЂРѕРєР° РІС‹РІРѕРґ РЅР° РєРѕРЅСЃРѕР»СЊ 
 	Monday.TemperatureF();
 	Monday.TemperatureK();
 	Monday.TemperatureRa();
 	Monday.TemperatureR();
 	cout << "\n";
-	Monday = 7.0; // Присваивание число классу
+	Monday = 7.0; // РџСЂРёСЃРІР°РёРІР°РЅРёРµ С‡РёСЃР»Р° РєР»Р°СЃСЃСѓ
 	Monday.TemperatureAll();
 	cout << "\n";
-	Monday = Tuesday;//Присваивание между классами
+	Monday = Tuesday;//РџСЂРёСЃРІР°РёРІР°РЅРёРµ РјРµР¶РґСѓ РєР»Р°СЃСЃР°РјРё
 	Monday.TemperatureAll();
 	system("pause");
 	return 0;
