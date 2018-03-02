@@ -1,4 +1,5 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
+#define strt "Событий нет"
 
 #include <stdio.h>
 #include <iostream>
@@ -7,141 +8,156 @@
 #include <locale.h>
 using namespace std;
 class EventCalendar {
-	int day;
-	int	month;
-	int year;
-	char *Event;
+	int day[30];
+	int	month[30];
+	int year[30];
+	char **Event;
 public:
-	bool flag = true;
-	EventCalendar(char *str = "События нет", int y = 0, int m = 0, int d = 0)
+	EventCalendar(char *str, int Num = -1, int y = 0, int m = 0, int d = 0)//
 	{
-		year = y;
-		month = m;
-		day = d;
-		Event = new char[strlen(str) + 1];
-		strcpy(Event, str);
+		Event = (char**)malloc(30 * sizeof(char*));
+		for (int i = 0; i < 30; i++)
+		{
+			year[i] = 0;
+			month[i] = 0;
+			day[i] = 0;
+			Event[i] = (char*)malloc(strlen(strt) + 1);
+			strcpy(Event[i], strt);
+		}
+		if ((Num > -1) && (Num < 30))
+		{
+			free(Event[Num]);
+			Event[Num] = (char*)malloc(strlen(str) + 1);
+			strcpy(Event[Num], str);
+		}
 	}
 	~EventCalendar()
 	{
-		delete[] Event;
+		free(Event);
 	}
-	EventCalendar& operator=(const EventCalendar& Event)
+	EventCalendar& operator=(const EventCalendar& calendar)
 	{
-		day = Event.day;
-		month = Event.month;
-		year = Event.year;
-		return *this;
-	}
-	void InputEvent(int _year, int _month, int _day, char *str)
-	{
-		if ((_year > 0 && _year < 2020) && (_month > 0 && _month < 13) && (_day > 0 && _day < 32))
+		for (int i = 0; i < 29; i++)
 		{
-			year = _year;
-			month = _month;
-			day = _day;
-			delete[] Event;
-			Event = new char[sizeof(str) + 1];
-			strcpy(Event, str);
-			flag = false;
+			day[i] = calendar.day[i];
+			month[i] = calendar.month[i];
+			year[i] = calendar.year[i];
+			free(Event[i]);
+			Event[i] = (char*)malloc(strlen(calendar.Event[i]) + 1);
+			strcpy(Event[i], calendar.Event[i]);
+			return *this;
 		}
 	}
-	void OutEvent()
+	void InputEvent(int Num, int _year, int _month, int _day, char *str)
 	{
-		cout << year << "." << month << "." << day << " " << Event;
-	}
-	void ShiftHelp1(int _year, int _month, int _day)
-	{
-		if ((_day + day) > 32)
+		if ((Num > -1) && (Num < 30))
 		{
-			month += 1;
-			day = (_day + day) - 31;
+			if ((_year > 0 && _year < 2020) && (_month > 0 && _month < 13) && (_day > 0 && _day < 32))
+			{
+				year[Num] = _year;
+				month[Num] = _month;
+				day[Num] = _day;
+				free(Event[Num]);
+				Event[Num] = (char*)malloc(strlen(str) + 1);
+				strcpy(Event[Num], str);
+			}
 		}
 		else
-			day += _day;
-
-		if ((_month + month) > 13)
-		{
-			year += 1;
-			month = (_month + month) - 12;
-		}
-		else
-			month += _month;
-
-		year += _year;
+			cout << "Не удалось установить дату с событием, некорректно задан номер события";
 	}
-	void ShiftHelp2(int _year, int _month, int _day)
+	void OutEvent(int Num)
 	{
-		if ((day - _day) <1)
-		{
-			month -= 1;
-			day = 31 - (_day - day);
-		}
-		else
-			day -= _day;
-
-		if ((month - _month) < 1)
-		{
-			year -= 1;
-			month = 12 - (_month - month);
-		}
-		else
-			month -= _month;
-
-		year -= _year;
+		cout << year[Num] << "." << month[Num] << "." << day[Num] << " " << Event[Num];
 	}
-	void ShiftEvent(int _year, int _month, int _day, int id)
+	void ShiftHelp1(int Num, int _year, int _month, int _day)
+	{
+		if ((_day + day[Num]) > 32)
+		{
+			month[Num] = month[Num] - 1;
+			day[Num] = (_day + day[Num]) - 31;
+		}
+		else
+			day[Num] = day[Num] + _day;
+
+		if ((_month + month[Num]) > 13)
+		{
+			year[Num] = year[Num] + 1;
+			month[Num] = (_month + month[Num]) - 12;
+		}
+		else
+			month[Num] += _month;
+
+		year[Num] = year[Num] + _year;
+	}//Вспомогательная функция для метода ShiftEvent
+	void ShiftHelp2(int Num, int _year, int _month, int _day)
+	{
+		if ((day[Num] - _day) <1)
+		{
+			month[Num] = month[Num] - 1;
+			day[Num] = 31 - (_day - day[Num]);
+		}
+		else
+			day[Num] = day[Num] - _day;
+
+		if ((month[Num] - _month) < 1)
+		{
+			year[Num] = year[Num] - 1;
+			month[Num] = 12 - (_month - month[Num]);
+		}
+		else
+			month[Num] = month[Num] - _month;
+
+		year[Num] = year[Num] - _year;
+	}//Вспомогательная функция для метода ShiftEvrnt
+	void ShiftEvent(int Num, int _year, int _month, int _day, int id)
 	{
 		switch (id)
 		{
-		case 1:ShiftHelp1(_year, _month, _day); break;
-		case 2:ShiftHelp2(_year, _month, _day); break;
+		case 1:ShiftHelp1(Num, _year, _month, _day); break;
+		case 2:ShiftHelp2(Num, _year, _month, _day); break;
 		}
 
 	}
-	void Difference(int _year, int _month, int _day)
+	void Difference(int Num, int _year, int _month, int _day)
 	{
-		cout << "Разница составляет " << abs(year - _year) << " лет," << abs(month - _month) << " месяцев," << abs(day - _day) << " дней \n";
+		cout << "Разница составляет " << abs(year[Num] - _year) << " лет," << abs(month[Num] - _month) << " месяцев," << abs(day[Num] - _day) << " дней \n";
 	}
-	int Day()
+	int Day(int Num)
 	{
-		return day;
+		return day[Num];
 	}
-	int Month()
+	int Month(int Num)
 	{
-		return month;
+		return month[Num];
 	}
-	int Year()
+	int Year(int Num)
 	{
-		return year;
+		return year[Num];
 	}
-
 };
 
 
 
 int main()
 {
-	int d, m, y, id;
+	int d, m, y, id, Num;
 	char str[200];
-	setlocale(LC_ALL, "Russian");
+	setlocale(LC_ALL, "rus");
+	class EventCalendar calendar;
+	cout << "Введите номер события ";
+	cin >> Num; cout << "\n";
 	cout << "Введите событие: ";
 	cin >> str; cout << "\n"; // использую sin а не gets, потому что студия не определяет gets
-	class EventCalendar calendar(str);
-	while (calendar.flag)
-	{
-		cout << "Введите дату события в формате: год месяц день ";
-		cin >> y >> m >> d; cout << "\n";
-		calendar.InputEvent(y, m, d, str);
-		if (calendar.flag)
-			cout << "Некорректно введена дата "; cout << "\n";
-	}
-	calendar.OutEvent(); cout << "\n";
-	cout << "Введите дату, с которой хотите  найти разницу в формате: год месяц число";
+	cout << "Введите дату события в формате: год месяц день: ";
 	cin >> y >> m >> d; cout << "\n";
-	calendar.Difference(y, m, d);
+	calendar.InputEvent(Num, y, m, d, str);
+	calendar.OutEvent(Num); cout << "\n";
+	cout << "Введите дату, с которой хотите найти разницу в формате: год месяц число: ";
+	cin >> y >> m >> d; cout << "\n";
+	calendar.Difference(Num, y, m, d);
 	cout << "Введите на сколько хотите сместить дату события и вперед(1) или назад(2): год месяц число направление: ";
 	cin >> y >> m >> d >> id; cout << "\n";
-	calendar.ShiftEvent(y, m, d, id);
-	calendar.OutEvent();
+	calendar.ShiftEvent(Num, y, m, d, id);
+	calendar.OutEvent(Num);
 	system("pause");
 }
