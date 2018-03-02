@@ -18,7 +18,7 @@ public:
 		year = y;
 		month = m;
 		day = d;
-		Event = new char[sizeof(str) + 1];
+		Event = new char[strlen(str) + 1];
 		strcpy(Event, str);
 	}
 	~EventCalendar()
@@ -39,6 +39,7 @@ public:
 			year = _year;
 			month = _month;
 			day = _day;
+			delete[] Event;
 			Event = new char[sizeof(str) + 1];
 			strcpy(Event, str);
 			flag = false;
