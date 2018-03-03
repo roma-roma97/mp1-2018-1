@@ -1,5 +1,5 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
-#define strt "Событий нет"
+#define STRT "Событий нет"
 
 #include <cstdio>
 #include <iostream>
@@ -16,25 +16,27 @@ class EventCalendar {
 public:
 	EventCalendar(char *str = "Событий нет", int Num = -1, int y = 0, int m = 0, int d = 0)
 	{
-		Event = new char*[30 * sizeof(char*)];                                      
+		Event = new char*[30];
 		for (int i = 0; i < 30; i++)
 		{
 			year[i] = 0;
 			month[i] = 0;
 			day[i] = 0;
-			Event[i] = new char[strlen(strt) + 1]; 
-			strcpy(Event[i], strt);
+			Event[i] = new char[strlen(STRT) + 1];
+			strcpy(Event[i], STRT);
 		}
 		if ((Num > -1) && (Num < 30))
 		{
 			delete[] Event[Num];
-			Event[Num] = new char[strlen(str) + 1]; 
+			Event[Num] = new char[strlen(str) + 1];
 			strcpy(Event[Num], str);
 		}
 	}
 	~EventCalendar()
 	{
-		delete[] Event; 
+		for (int i = 0; i < 30; i++)
+			delete[] Event[i];
+		delete[] Event;
 	}
 	EventCalendar& operator=(const EventCalendar& calendar)
 	{
@@ -46,13 +48,12 @@ public:
 			delete[] Event[i];//free(Event[i]);
 			Event[i] = new char[strlen(calendar.Event[i]) + 1];
 			strcpy(Event[i], calendar.Event[i]);
-			return *this;
 		}
+		return *this;
 	}
 	void InputEvent(int Num, int _year, int _month, int _day, char *str)
 	{
 		if ((Num > -1) && (Num < 30))
-		{
 			if ((_year > 0 && _year < 2021) && (_month > 0 && _month < 13) && (_day > 0 && _day < 32))
 			{
 				year[Num] = _year;
@@ -62,9 +63,6 @@ public:
 				Event[Num] = new char[strlen(str) + 1];
 				strcpy(Event[Num], str);
 			}
-		}
-		else
-			cout << "Не удалось установить дату с событием, некорректно задан номер события";
 	}
 	void OutEvent(int Num)
 	{
@@ -109,7 +107,7 @@ public:
 			month[Num] = month[Num] - _month;
 
 		year[Num] = year[Num] - _year;
-	}//Вспомогательная функция для метода ShiftEvrnt
+	}//Вспомогательная функция для метода ShiftEvent
 	void ShiftEvent(int Num, int _year, int _month, int _day, int id)
 	{
 		switch (id)
