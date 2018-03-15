@@ -7,35 +7,34 @@ using namespace std;
 
 class FunctionTabulator
 {
-	int PointsTab;
+	int NumberOfPoints;
 	double BoundMin;
 	double BoundMax;
 	double *ResArr;
-	friend void SaveReport(FunctionTabulator& object);
 public:
-	FunctionTabulator(int _PointsTab = 1, double _BoundMin = 0, double _BoundMax = 0)
+	FunctionTabulator(int _NumberOfPoints = 1, double _BoundMin = 0, double _BoundMax = 0)
 	{
-		PointsTab = _PointsTab;
+		NumberOfPoints = _NumberOfPoints;
 		BoundMin = _BoundMin;
 		BoundMax = _BoundMax;
-		ResArr = new double[_PointsTab];
+		ResArr = new double[_NumberOfPoints];
 	}
 	FunctionTabulator(FunctionTabulator const &tab)
 	{
-		PointsTab = tab.PointsTab;
+		NumberOfPoints = tab.NumberOfPoints;
 		BoundMin = tab.BoundMin;
 		BoundMax = tab.BoundMax;
-		ResArr = new double[PointsTab];
-		for (int i = 0; i < PointsTab; i++)
+		ResArr = new double[NumberOfPoints];
+		for (int i = 0; i < NumberOfPoints; i++)
 			ResArr[i] = tab.ResArr[i];
 	}
 	~FunctionTabulator()
 	{
 		delete[] ResArr;
 	}
-	int GetPointsTab()
+	int GetNumberOfPoints()
 	{
-		return PointsTab;
+		return NumberOfPoints;
 	}
 	double GetBoundMin()
 	{
@@ -45,30 +44,50 @@ public:
 	{
 		return BoundMax;
 	}
-	void InputPointsTab(int points)
+	void SetNumberOfPoints(int points)
 	{
-		PointsTab = points;
+		NumberOfPoints = points;
 		delete[] ResArr;
 		ResArr = new double[points];
 	}
-	void InputBounds(double min, double max)
+	void SetBounds(double min, double max)
 	{
 		BoundMin = min;
 		BoundMax = max;
 	}
-	void Tabulator(double(*func)(double))
+	void Tabulate(double(*func)(double))
 	{
 		double x = BoundMin;
-		double step = (BoundMax - BoundMin) / PointsTab;//шаг в табуляции
-		for (int i = 0; i < PointsTab; i++)
+		double step = (BoundMax - BoundMin) / NumberOfPoints;//шаг в табуляции
+		for (int i = 0; i < NumberOfPoints; i++)
 		{
 			ResArr[i] = func(x);
 			x += step;
 		}
 	}
-	double GetTab(int i)
+	void SaveReportTab()//Функция, создающая отчет в папке с проектом.
 	{
-		return ResArr[i];
+		double step = (BoundMax - BoundMin) / NumberOfPoints;//шаг в табуляции
+		double x = BoundMin;
+		ofstream file;
+		file.open("report.txt");//создает текстовый документ в папке с проектом
+		file << "Границы табулирования: от " << BoundMin << " до " << BoundMax << endl;
+		file << "Количество точек = " << NumberOfPoints << endl;
+		file << "Шаг табуляции = " << step << endl;
+		for (int i = 0; i <NumberOfPoints; i++)
+		{
+			file << "Значение аргумента = " << x << " Значение функции = " << ResArr[i] << endl;
+			x += step;
+		}
+		file.close();
+	}
+	double GetPoint(int index)
+	{
+		return ResArr[index];
+	}
+	double *GetAllPoints()
+	{
+		return  ResArr;
 	}
 
 };
@@ -76,54 +95,36 @@ double TestFunc(double x)// Функция, которая подвергает�
 {
 	return (x*x);
 }
-void SaveReport(FunctionTabulator& object)//Функция, создающая отчет в папке с проектом.
+void OutReport(double *arr, double min, double max, int num)
 {
-	double step = (object.BoundMax - object.BoundMin) / object.PointsTab;//шаг в табуляции
-	double x = object.BoundMin;
-	ofstream file;
-	file.open("report.txt");//создает текстовый документ в папке с проектом
-	file << "Границы табулирования: от " << object.BoundMin << " до " << object.BoundMax << endl;
-	file << "Количество точек = " << object.PointsTab << endl;
-	file << "Шаг табуляции = " << step << endl;
-	for (int i = 0; i <object.PointsTab; i++)
-	{
-		file << "Значение аргумента = " << x << " Значение функции = " << object.ResArr[i] << endl;
-		x += step;
-	}
-	file.close();
-}
-void OutReport(FunctionTabulator& object)
-{
-	double step = (object.GetBoundMax() - object.GetBoundMin()) / object.GetPointsTab();
-	double x = object.GetBoundMin();
-	cout << "Границы табулирования: от " << object.GetBoundMin() << " до " << object.GetBoundMax() << endl;
-	cout << "Количество точек = " << object.GetPointsTab() << endl;
+	double step = (max - min) / num;
+	double x = min;
+	cout << "Границы табулирования: от " << min << " до " << max << endl;
+	cout << "Количество точек = " << num << endl;
 	cout << "Шаг табуляции = " << step << endl;
-	for (int i = 0; i < object.GetPointsTab(); i++)
+	for (int i = 0; i < num; i++)
 	{
-		cout << "Значение аргумента = " << x << " Значение функции = " << object.GetTab(i) << endl;
+		cout << "Значение аргумента = " << x << " Значение функции = " << arr[i] << endl;
 		x += step;
 	}
-
 }
 
 int main()
 {
-	int Num;
+	int num;
 	int min, max;
 	double(*f)(double);
 	f = TestFunc;
 	setlocale(LC_ALL, "Russian");
 	FunctionTabulator sqr;
 	cout << "Введите количество точек табуляции ";
-	cin >> Num; cout << endl;
-	sqr.InputPointsTab(Num);
+	cin >> num; cout << endl;
+	sqr.SetNumberOfPoints(num);
 	cout << "Введите границы табуляции ";
 	cin >> min >> max; cout << endl;
-	sqr.InputBounds(min, max);
-	sqr.Tabulator(f);
-	OutReport(sqr);
-	//Функция SaveReport сохраняет отчет об табулировании в отдельный текстовый файл, который создается в папке с проектом.
-	SaveReport(sqr);
+	sqr.SetBounds(min, max);
+	sqr.Tabulate(f);
+	OutReport(sqr.GetAllPoints(), sqr.GetBoundMin(), sqr.GetBoundMax(), sqr.GetNumberOfPoints());
+	sqr.SaveReportTab();
 	system("pause");
 }
