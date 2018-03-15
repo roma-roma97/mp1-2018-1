@@ -11,12 +11,14 @@ class FunctionTabulator
 	double BoundMin;
 	double BoundMax;
 	double *ResArr;
+	friend void SaveReport(FunctionTabulator& object);
 public:
-	FunctionTabulator(double _PointsTab = 1, double _BoundMin = 0, double _BoundMax = 0)
+	FunctionTabulator(int _PointsTab = 1, double _BoundMin = 0, double _BoundMax = 0)
 	{
 		PointsTab = _PointsTab;
 		BoundMin = _BoundMin;
 		BoundMax = _BoundMax;
+		ResArr = new double[_PointsTab];
 	}
 	FunctionTabulator(FunctionTabulator const &tab)
 	{
@@ -35,17 +37,19 @@ public:
 	{
 		return PointsTab;
 	}
-	double GetBondMin()
+	double GetBoundMin()
 	{
 		return BoundMin;
 	}
-	double GetBondMax()
+	double GetBoundMax()
 	{
 		return BoundMax;
 	}
 	void InputPointsTab(int points)
 	{
 		PointsTab = points;
+		delete[] ResArr;
+		ResArr = new double[points];
 	}
 	void InputBound(double min, double max)
 	{
@@ -54,7 +58,6 @@ public:
 	}
 	void Tabulator(double(*func)(double))
 	{
-		ResArr = new double[PointsTab];
 		double x = BoundMin;
 		double step = (BoundMax - BoundMin) / PointsTab;//шаг в табуляции
 		for (int i = 0; i < PointsTab; i++)
@@ -63,53 +66,51 @@ public:
 			x += step;
 		}
 	}
-	void CloneTab(double *arr, double(*func)(double))
+	double GetTab(int i)
 	{
-		Tabulator(func);
-		for (int i = 0; i < PointsTab; i++)
-			arr[i] = ResArr[i];
+		return ResArr[i];
 	}
+
 };
 double TestFunc(double x)// Функция, которая подвергается табуляции.
 {
 	return (x*x);
 }
-void SaveReport(double *arr, double max, double min, int point)//Функция, создающая отчет в папке с проектом.
+void SaveReport(FunctionTabulator& object)//Функция, создающая отчет в папке с проектом.
 {
-	double step = (max - min) / point;//шаг в табуляции
-	double x = min;
+	double step = (object.BoundMax - object.BoundMin) / object.PointsTab;//шаг в табуляции
+	double x = object.BoundMin;
 	ofstream file;
 	file.open("report.txt");//создает текстовый документ в папке с проектом
-	file << "Границы табулирования: от " << min << " до " << max << endl;
-	file << "Количество точек = " << point << endl;
+	file << "Границы табулирования: от " << object.BoundMin << " до " << object.BoundMax << endl;
+	file << "Количество точек = " << object.PointsTab << endl;
 	file << "Шаг табуляции = " << step << endl;
-	for (int i = 0; i < point; i++)
+	for (int i = 0; i <object.PointsTab; i++)
 	{
-		file << "Значение аргумента = " << x << " Значение функции = " << arr[i] << endl;
+		file << "Значение аргумента = " << x << " Значение функции = " << object.ResArr[i] << endl;
 		x += step;
 	}
 	file.close();
 }
-void OutReport(double *arr, double max, double min, int point)
+void OutReport(FunctionTabulator& object)
 {
-	double step = (max - min) / point;
-	double x = min;
-	cout << "Границы табулирования: от " << min << " до " << max << endl;
-	cout << "Количество точек = " << point << endl;
+	double step = (object.GetBoundMax() - object.GetBoundMin()) / object.GetPointsTab();
+	double x = object.GetBoundMin();
+	cout << "Границы табулирования: от " << object.GetBoundMin() << " до " << object.GetBoundMax() << endl;
+	cout << "Количество точек = " << object.GetPointsTab() << endl;
 	cout << "Шаг табуляции = " << step << endl;
-	for (int i = 0; i < point; i++)
+	for (int i = 0; i < object.GetPointsTab(); i++)
 	{
-		cout << "Значение аргумента = " << x << " Значение функции = " << arr[i] << endl;
+		cout << "Значение аргумента = " << x << " Значение функции = " << object.GetTab(i) << endl;
 		x += step;
 	}
-}
 
+}
 
 int main()
 {
 	int Num;
 	int min, max;
-	double *Result;
 	double(*f)(double);
 	f = TestFunc;
 	setlocale(LC_ALL, "Russian");
@@ -120,10 +121,9 @@ int main()
 	cout << "Введите границы табуляции ";
 	cin >> min >> max; cout << endl;
 	sqr.InputBound(min, max);
-	Result = new double[sqr.GetPointsTab()];
-	sqr.CloneTab(Result, f);
-	OutReport(Result, sqr.GetBondMax(), sqr.GetBondMin(), sqr.GetPointsTab());
-	// Функция SaveReport сохраняет отчет об табулировании в отдельный текстовый файл, который создается в папке с проектом.
-	SaveReport(Result, sqr.GetBondMax(), sqr.GetBondMin(), sqr.GetPointsTab());
+	sqr.Tabulator(f);
+	OutReport(sqr);
+	//Функция SaveReport сохраняет отчет об табулировании в отдельный текстовый файл, который создается в папке с проектом.
+	SaveReport(sqr);
 	system("pause");
 }
