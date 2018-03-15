@@ -51,7 +51,7 @@ public:
 		delete[] ResArr;
 		ResArr = new double[points];
 	}
-	void InputBound(double min, double max)
+	void InputBounds(double min, double max)
 	{
 		BoundMin = min;
 		BoundMax = max;
@@ -120,7 +120,7 @@ int main()
 	sqr.InputPointsTab(Num);
 	cout << "Введите границы табуляции ";
 	cin >> min >> max; cout << endl;
-	sqr.InputBound(min, max);
+	sqr.InputBounds(min, max);
 	sqr.Tabulator(f);
 	OutReport(sqr);
 	//Функция SaveReport сохраняет отчет об табулировании в отдельный текстовый файл, который создается в папке с проектом.
