@@ -11,6 +11,7 @@ class FunctionTabulator
 	double BoundMin;
 	double BoundMax;
 	double *ResArr;
+	double(*Function)(double);
 public:
 	FunctionTabulator(int _NumberOfPoints = 1, double _BoundMin = 0, double _BoundMax = 0)
 	{
@@ -19,12 +20,21 @@ public:
 		BoundMax = _BoundMax;
 		ResArr = new double[_NumberOfPoints];
 	}
+	FunctionTabulator(double(*_Function)(double), int _NumberOfPoints = 1, double _BoundMin = 0, double _BoundMax = 0)
+	{
+		NumberOfPoints = _NumberOfPoints;
+		BoundMin = _BoundMin;
+		BoundMax = _BoundMax;
+		ResArr = new double[_NumberOfPoints];
+		Function = _Function;
+	}
 	FunctionTabulator(FunctionTabulator const &tab)
 	{
 		NumberOfPoints = tab.NumberOfPoints;
 		BoundMin = tab.BoundMin;
 		BoundMax = tab.BoundMax;
 		ResArr = new double[NumberOfPoints];
+		Function = tab.Function;
 		for (int i = 0; i < NumberOfPoints; i++)
 			ResArr[i] = tab.ResArr[i];
 	}
@@ -44,6 +54,11 @@ public:
 	{
 		return BoundMax;
 	}
+	double(*(GetFunction()))(double) { return Function; }
+	void SetFunction(double(*_Function)(double))
+	{
+		Function = _Function;
+	}
 	void SetNumberOfPoints(int points)
 	{
 		NumberOfPoints = points;
@@ -55,13 +70,13 @@ public:
 		BoundMin = min;
 		BoundMax = max;
 	}
-	void Tabulate(double(*func)(double))
+	void Tabulate()
 	{
 		double x = BoundMin;
 		double step = (BoundMax - BoundMin) / NumberOfPoints;//шаг в табуляции
 		for (int i = 0; i < NumberOfPoints; i++)
 		{
-			ResArr[i] = func(x);
+			ResArr[i] = Function(x);
 			x += step;
 		}
 	}
@@ -107,6 +122,7 @@ void OutReport(double *arr, double min, double max, int num)
 		cout << "Значение аргумента = " << x << " Значение функции = " << arr[i] << endl;
 		x += step;
 	}
+
 }
 
 int main()
@@ -117,13 +133,14 @@ int main()
 	f = TestFunc;
 	setlocale(LC_ALL, "Russian");
 	FunctionTabulator sqr;
+	sqr.SetFunction(f);
 	cout << "Введите количество точек табуляции ";
 	cin >> num; cout << endl;
 	sqr.SetNumberOfPoints(num);
 	cout << "Введите границы табуляции ";
 	cin >> min >> max; cout << endl;
 	sqr.SetBounds(min, max);
-	sqr.Tabulate(f);
+	sqr.Tabulate();
 	OutReport(sqr.GetAllPoints(), sqr.GetBoundMin(), sqr.GetBoundMax(), sqr.GetNumberOfPoints());
 	sqr.SaveReportTab();
 	system("pause");
