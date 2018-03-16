@@ -40,15 +40,20 @@ public:
 	}
 	FunctionTabulator& operator=(const FunctionTabulator& tab)
 	{
-		NumberOfPoints = tab.NumberOfPoints;
+		if (this == &tab)
+			return *this;
+		if (NumberOfPoints != tab.NumberOfPoints)
+		{
+			delete[] ResArr;
+			ResArr = new double[tab.NumberOfPoints];
+			NumberOfPoints = tab.NumberOfPoints;
+		}
 		BoundMin = tab.BoundMin;
 		BoundMax = tab.BoundMax;
 		Function = tab.Function;
-		delete[] ResArr;
-		ResArr = new double[NumberOfPoints];
 		for (int i = 0; i < NumberOfPoints; i++)
 			ResArr[i] = tab.ResArr[i];
-	    return *this;
+		return *this;
 	}
 	~FunctionTabulator()
 	{
