@@ -38,6 +38,18 @@ public:
 		for (int i = 0; i < NumberOfPoints; i++)
 			ResArr[i] = tab.ResArr[i];
 	}
+	FunctionTabulator& operator=(const FunctionTabulator& tab)
+	{
+		NumberOfPoints = tab.NumberOfPoints;
+		BoundMin = tab.BoundMin;
+		BoundMax = tab.BoundMax;
+		Function = tab.Function;
+		delete[] ResArr;
+		ResArr = new double[NumberOfPoints];
+		for (int i = 0; i < NumberOfPoints; i++)
+			ResArr[i] = tab.ResArr[i];
+	    return *this;
+	}
 	~FunctionTabulator()
 	{
 		delete[] ResArr;
